@@ -15,11 +15,5 @@ functions:
     handler: handler.graphqlHandler
     events:
       - http:
-          method: get
-          path: graphql
-  graphql:
-    handler: handler.graphqlHandler
-    events:
-      - http:
-          method: post
+          method: any
           path: graphql

@@ -5,7 +5,12 @@
   "main": "handler.js",
   "scripts": {
     "generate:resolvers": "graphqlgen",
-    "start:dev": "sls offline start --port 8080",
+    "dev:refresh": "yarn run dev:down && yarn run dev:up",
+    "dev:up": "docker-compose up --build",
+    "dev:down": "docker-compose down",
+    "start:dev": "docker-compose start",
+    "stop:dev": "docker-compose stop",
+    "start": "serverless offline start --host 0.0.0.0 --port 3000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -27,6 +32,6 @@
     "typescript": "^2.9.2",
     "webpack": "^4.5.0"
   },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "author": "Paul Rimiru",
   "license": "MIT"
 }

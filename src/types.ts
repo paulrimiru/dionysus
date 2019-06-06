@@ -5,6 +5,7 @@ export interface Context {
 export interface User {
   id: string
   name: string | null
+  emai?: string;
   postIDs: string[]
 }
 

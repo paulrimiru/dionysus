@@ -15,7 +15,7 @@ const posts = [
   },
   {
     id: '4',
-    title: 'GraphQL Weekly',
+    title: 'GraphQL Yearly changed',
     content: 'Weekly news about the Grap[hQL ecosystem and community.',
     published: false,
     authorId: '1',

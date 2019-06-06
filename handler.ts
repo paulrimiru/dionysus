@@ -1,5 +1,4 @@
-import { ApolloServer, gql } from 'apollo-server-lambda';
-import * as fs from 'fs';
+import { ApolloServer } from 'apollo-server-lambda';
 
 import { resolvers } from './src/resolvers';
 import { data } from './src/data';
@@ -13,4 +12,11 @@ const server = new ApolloServer({
   playground: true,
 } as any)
 
-exports.graphqlHandler = server.createHandler();
+exports.graphqlHandler = server.createHandler(
+  {
+    cors: {
+      origin: '*',
+      credentials: true,
+    },
+  }
+);

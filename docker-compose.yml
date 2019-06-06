@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  dionysus:
+    build:
+      dockerfile: docker/Dockerfile
+      context: ./
+    image: dionysus/dionysus_api
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - localstack
+    ports:
+      - '3000:3000'
+    container_name: dionysus_api
+    environment:
+      AWS_ENDPOINT: 'http://dynamodb_localstack:8000' 
+      AWS_REGION: 'us-west-2'
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+    network_mode: 'bridge'
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - '8000:8000'
+      - '8080:8080'
+    container_name: dynamodb_localstack
+    environment:
+      SERVICES: dynamodb:8000
+      DATA_DIR: '/tmp/localstack/data'

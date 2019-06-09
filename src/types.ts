@@ -1,24 +1,17 @@
+import { Db } from './utils/db';
+
 export interface Context {
-  data: Data
+  db: Db
+  user?: User,
 }
 
 export interface User {
   id: string
-  name: string | null
-  emai?: string;
-  postIDs: string[]
+  name: string;
+  email: string;
 }
 
-export interface Post {
-  id: string
-  title: string
-  content: string
-  published: boolean
-  authorId: string
-}
-
-export interface Data {
-  posts: Post[]
-  users: User[]
-  idProvider: () => string
+export interface Auth {
+  token: string;
+  user: User;
 }

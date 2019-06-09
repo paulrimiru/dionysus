@@ -1,13 +1,24 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
     "sourceMap": true,
     "target": "es6",
     "lib": [
-      "esnext"
+      "es2016",
+      "dom",
+      "esnext",
     ],
     "moduleResolution": "node",
+    "noImplicitAny": false,
+    "strict": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "allowSyntheticDefaultImports":true,
   },
   "exclude": [
-    "node_modules"
+    "node_modules/",
   ]
 }

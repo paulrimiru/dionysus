@@ -1,0 +1,9 @@
+schema: "./src/schema.graphql"
+generates:
+  src/generated/graphql.ts:
+    config:
+      avoidOptionals: false
+    plugins:
+      - add: '// tslint:disable'
+      - "typescript"
+      - "typescript-resolvers"

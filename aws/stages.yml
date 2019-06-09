@@ -1,0 +1,8 @@
+production:
+  DYNAMODB_TABLE_PREFIX: 'dionysus-prod'
+staging:
+  DYNAMODB_TABLE_PREFIX: 'dionysus-staging'
+dev:
+  DYNAMODB_TABLE_PREFIX: 'dionysus-dev'
+test:
+  DYNAMODB_TABLE_PREFIX: 'dionysus-test'

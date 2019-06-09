@@ -4,24 +4,53 @@ service:
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
+  - serverless-dynamodb-local
   - serverless-offline
+
+custom:
+  stages: ${file(./aws/stages.yml)}
+  stage-name: ${opt:stage, env:STAGE}
+  stage: ${self:custom.stages.${self:custom.stage-name}}
+  dynamodb:
+    stages:
+      - dev
+      - test
+    start:
+      migrate: true
+      inMemory: true   
+      host: ${env:DYNAMODB_HOST, 'dynamo'}
+      port: ${env:DYNAMODB_PORT, '8010'}
+    tables:
+      users: ${self:provider.environment.DYNAMODB_TABLE_PREFIX}-users
+  webpack:
+    packager: yarn
+    packagerOptions: {
+      ignoreScripts: true
+    }
+    excludeFiles: src/**/*.spec.js
 
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: dev
-  environment:
-    USER_TABLE: users-table-${self:provider.stage}
+  stage: ${self:custom.stage-name}
+  region: us-east-1
+  environment: ${file(./aws/env.yml)}
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.USER_TABLE}"
+    - ${file(./aws/iam.yml)}
+
+common:
+  BaseTableSchema: &BaseTableSchema
+    AttributeDefinitions:
+    -
+      AttributeName: id
+      AttributeType: S
+    KeySchema:
+    -
+      AttributeName: id
+      KeyType: HASH
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
 
 resources:
   Resources:
@@ -29,21 +58,44 @@ resources:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          - AttributeName: ID
-            AttributeType: S
+        -
+          AttributeName: id
+          AttributeType: S
+        -
+          AttributeName: email
+          AttributeType: S
         KeySchema:
-          - AttributeName: ID
-            KeyType: HASH
+        -
+          AttributeName: id
+          KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.USER_TABLE}
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:custom.dynamodb.tables.users}
+        GlobalSecondaryIndexes:
+          - IndexName: email_index
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
 
 functions:
   graphql:
     handler: handler.graphqlHandler
     events:
       - http:
-          method: any
+          method: post
           path: graphql
+          cors: true
+
+  graphql-playground:
+    handler: handler.graphqlHandler
+    events:
+      - http:
+          method: get
+          path: playground
           cors: true

@@ -1,0 +1,33 @@
+{
+  "defaultSeverity": "error",
+  "linterOptions": {
+    "exclude": [
+      "**/__snapshots__/*"
+    ]
+  },
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
+  "jsRules": {},
+  "rules": {
+    "await-promise": [true],
+    "interface-name": [true, "never-prefix"],
+    "max-classes-per-file": false,
+    "max-line-length": false,
+    "max-func-body-length": [true, 80, { "ignore-parameters-to-function-regex": "^(describe|context|only)$", "ignore-comments": true }],
+    "no-empty": [true, "allow-empty-catch"],
+    "no-empty-interface": [false],
+    "no-invalid-template-strings": [true],
+    "no-floating-promises": [true],
+    "no-unused-variable": {
+      "options": {
+        "check-parameters": false,
+        "ignore-pattern": "^_"
+      }
+    },
+    "no-console": true,
+    "object-literal-sort-keys": [false]
+  },
+  "rulesDirectory": ["node_modules/tslint-microsoft-contrib"]
+}

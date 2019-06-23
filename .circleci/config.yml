@@ -89,8 +89,12 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Install serverless
+          command: yarn add serverless
+
+      - run:
           name: Publish to staging
-          command: serverless deploy -v -s staging
+          command: npx serverless deploy -v -s staging
 
   deploy-prod:
     <<: *defaults
@@ -98,10 +102,12 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-
+      - run:
+          name: Install serverless
+          command: yarn add serverless
       - run:
           name: Publish to production
-          command: serverless deploy -v -s production
+          command: npx serverless deploy -v -s production
 
 workflows:
   version: 2

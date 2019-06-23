@@ -1,5 +1,6 @@
 .vscode/
 .serverless/
+.dynamodb/
 coverage/
 node_modules/
 .env

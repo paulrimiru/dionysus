@@ -1,7 +1,7 @@
-version: '3'
+version: '2'
 
 services:
-  dionysus:
+  base:
     build:
       dockerfile: docker/Dockerfile
       context: ./
@@ -9,23 +9,36 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    depends_on:
-      - localstack
+    env_file:
+      - ./env/default.env
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+
+  dionysus:
+    extends:
+      service: base
+    command: /bin/bash -c 'export STAGE=$${STAGE:-dev} && yarn run start'
     ports:
       - '3000:3000'
     container_name: dionysus_api
+    links:
+      - dynamo
+
+  test:
+    extends:
+      service: base
+    command: /bin/bash -c 'export STAGE=$${STAGE:-test} && yarn run test:run'
+    container_name: test_api
+    links:
+      - dynamo
     environment:
-      AWS_ENDPOINT: 'http://dynamodb_localstack:8000' 
-      AWS_REGION: 'us-west-2'
-      AWS_ACCESS_KEY_ID:
-      AWS_SECRET_ACCESS_KEY:
-    network_mode: 'bridge'
-  localstack:
-    image: localstack/localstack:latest
+      DYNAMODB_TABLE_PREFIX: "dionysus-test"
+
+  dynamo:
+    image: "cnadiminti/dynamodb-local"
     ports:
-      - '8000:8000'
-      - '8080:8080'
-    container_name: dynamodb_localstack
+      - "8010:8010"
     environment:
-      SERVICES: dynamodb:8000
-      DATA_DIR: '/tmp/localstack/data'
+      DYNAMODB_PORT: "8010"

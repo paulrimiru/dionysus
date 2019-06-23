@@ -12,10 +12,10 @@ module.exports = {
   entry: entries,
   devtool: 'source-map',
   resolve: {
-    extensions: ['.mjs', '.js', '.jsx', '.json', '.ts', '.tsx'],
+    extensions: ['.mjs', '.js', '.jsx', '.json', '.ts', '.tsx', '.gql', '.graphql'],
   },
   output: {
-    libraryTarget: 'commonjs',
+    libraryTarget: 'commonjs2',
     path: path.join(__dirname, '.webpack'),
     filename: '[name].js',
   },

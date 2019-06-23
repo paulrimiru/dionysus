@@ -1,0 +1,131 @@
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:10.15.3
+    - image: cnadiminti/dynamodb-local
+
+whitelist: &whitelist
+  paths:
+    - .nyc_output/*
+    - coverage/*
+    - dist/*
+    - node_modules/*
+    - src/*
+    - scripts/*
+    - docker/*
+    - aws/*
+    - docker-compose.yml
+    - codegen.yml
+    - handler.ts
+    - source-map-install.js
+    - webpack.config.js
+    - package.json
+    - tsconfig.json
+    - tslint.json
+    - .dockerignore
+    - .prettierrc
+    - serverless.yml
+    - env/*
+
+version: 2
+jobs:
+  checkout:
+    <<: *defaults
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: yarn
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - persist_to_workspace:
+          root: ~/repo
+          <<: *whitelist
+
+  lint:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Lint TypeScript code
+          command: yarn test:lint
+
+  test:
+    <<: *defaults
+
+    steps:
+      - setup_remote_docker
+
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Install serverless
+          command: yarn add serverless
+
+      - run:
+          name: Run tests
+          command: yarn test:ci
+
+  deploy-staging:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Publish to staging
+          command: serverless deploy -v -s staging
+
+  deploy-prod:
+    <<: *defaults
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Publish to production
+          command: serverless deploy -v -s production
+
+workflows:
+  version: 2
+
+  build:
+    jobs:
+      - checkout
+      - lint:
+          requires:
+            - checkout
+      - test:
+          requires:
+            - lint
+      - deploy-staging:
+          requires:
+            - test
+          filters:
+            branches:
+              only: develop
+      - deploy-prod:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      
+            

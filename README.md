@@ -1,0 +1,3 @@
+# dionysus
+
+serverless + grapghql application

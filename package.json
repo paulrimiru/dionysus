@@ -59,7 +59,7 @@
     "@graphql-codegen/add": "^1.0.2",
     "apollo-server-lambda": "^2.5.0-rc.0",
     "apollo-server-testing": "^2.6.2",
-    "aws-sdk": "^2.471.0",
+    "aws-sdk": "^2.814.0",
     "bcrypt-node": "^0.1.0",
     "bufferutil": "^4.0.1",
     "dataloader": "^1.4.0",
